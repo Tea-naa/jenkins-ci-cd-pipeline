@@ -5,6 +5,14 @@ pipeline {
     }
 
     stages {
+        stage('Increment Version') {
+            steps {
+                dir('app') {
+                    sh 'npm version minot --nogit-tag-version'
+                }
+            }
+        }
+        
         stage ('Test'){
             steps {
                 dir('app') {
