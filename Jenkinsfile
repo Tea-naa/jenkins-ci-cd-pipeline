@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     tools {
         nodejs "node"
     }
@@ -12,12 +13,27 @@ pipeline {
                 }
             }
         }
-        
-        stage ('Test'){
+
+        stage('Test') {
             steps {
                 dir('app') {
                     sh 'npm install'
                     sh 'npm test'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('app') {
+                    script {
+                        def version = sh(
+                            script: "node -p \"require('./package.json').version\"",
+                            returnStdout: true
+                        ).trim()
+
+                        sh "docker build -t teanaa/jenkins-node-app:${version} ."
+                    }
                 }
             }
         }
