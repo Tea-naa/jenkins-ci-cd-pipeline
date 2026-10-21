@@ -8,7 +8,7 @@ pipeline {
         stage('Increment Version') {
             steps {
                 dir('app') {
-                    sh 'npm version minot --nogit-tag-version'
+                    sh 'npm version minor --no-git-tag-version'
                 }
             }
         }
