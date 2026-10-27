@@ -42,6 +42,27 @@ pipeline {
             }
         }
 
+        stage('Deploy to EC2') {
+            steps {
+                script {
+                    def version = sh(
+                        script: "node -p \"require('./app/package.json').version\"",
+                        returnStdout: true
+                    ).trim()
+
+                    def IMAGE_NAME = "teanaa/jenkins-node-app:${version}"
+                    def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME}"
+                    def ec2Instance = "ec2-user@3.137.220.26"
+
+                    sshagent(['ec2-server-key']) {
+                        sh "scp -o StrictHostKeyChecking=no server-cmds.sh ${ec2Instance}:/home/ec2-user"
+                        sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${ec2Instance}:/home/ec2-user"
+                        sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${shellCmd}"
+                    }
+                }
+            }
+        }
+
         stage('Commit Version to GitHub') {
             steps {
                 dir('app') {
