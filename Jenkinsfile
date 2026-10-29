@@ -74,7 +74,7 @@ pipeline {
 
         stage('Commit Version to GitHub') {
     when {
-        branch 'main'
+        expression { false }
     }
     steps {
         dir('app') {
